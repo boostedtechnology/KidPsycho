@@ -22,6 +22,8 @@ import { ProfessionalAssessmentsPage } from '@/pages/professional/assessments.ts
 import { ProfessionalDashboard } from '@/pages/professional/professional-dashboard.tsx';
 import { AIAdaptiveAssessment } from '@/pages/ai-adaptive-assessment.tsx';
 import { Calendar } from '@/pages/professional/calendar.tsx';
+import { AddChild } from '@/pages/add-child.tsx';
+import { EditChild } from '@/pages/edit-child.tsx';
 
 const queryClient = new QueryClient();
 
@@ -62,6 +64,8 @@ function App() {
             <Route path="/professional/assessment/:type/details" element={<ProfessionalAssessmentDetails />} />
             <Route path="/professional/assessments" element={<ProfessionalAssessmentsPage />} />
             <Route path="/professional/calendar" element={<Calendar />} />
+            <Route path="/add-child" element={<AddChild />} />
+            <Route path="/edit-child/:id" element={<EditChild />} />
           </Route>
         </Routes>
       </Router>
