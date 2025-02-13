@@ -304,11 +304,22 @@ export function ProfessionalDashboard() {
             <div className="flex items-center">
               <h1 className="text-2xl font-bold text-gray-900">Professional Dashboard</h1>
             </div>
-            <div className="flex items-center space-x-3">
-              <div className="h-8 w-8 rounded-full bg-blue-100 flex items-center justify-center">
-                <span className="text-blue-600 font-semibold">SW</span>
+            <div className="flex items-center space-x-4">
+              <Button
+                variant="outline"
+                onClick={() => navigate('/professional/calendar')}
+                className="flex items-center"
+              >
+                <Calendar className="h-5 w-5 mr-2" />
+                Manage Availability
+              </Button>
+
+              <div className="flex items-center space-x-3">
+                <div className="h-8 w-8 rounded-full bg-blue-100 flex items-center justify-center">
+                  <span className="text-blue-600 font-semibold">SW</span>
+                </div>
+                <span className="text-sm font-medium text-gray-700">Dr. Sarah Wilson</span>
               </div>
-              <span className="text-sm font-medium text-gray-700">Dr. Sarah Wilson</span>
             </div>
           </div>
         </div>
