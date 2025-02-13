@@ -13,8 +13,13 @@ import { StudentDetails } from './pages/educator/student/[id]';
 import { FindSpecialists } from './pages/find-specialists';
 import { ParentDashboard } from './pages/parent-dashboard';
 import { PatientProfile } from './pages/patient-profile';
-import { ProfessionalDashboard } from './pages/professional-dashboard';
 import { ScheduleMeeting } from './pages/schedule-meeting';
+import { ProfessionalAssessmentDetails } from '@/pages/professional/assessment-details.tsx';
+import { AddProfessionalReport } from '@/pages/professional/add-professional-report.tsx';
+import { ProfessionalAssessmentView } from '@/pages/professional/assessment-view.tsx';
+import { ViewProfessionalReport } from '@/pages/professional/view-professional-report.tsx';
+import { ProfessionalAssessmentsPage } from '@/pages/professional/assessments.tsx';
+import { ProfessionalDashboard } from '@/pages/professional/professional-dashboard.tsx';
 
 const queryClient = new QueryClient();
 
@@ -25,7 +30,6 @@ function App() {
         <Routes>
           <Route element={<DashboardLayout />}>
             <Route path="/" element={<ParentDashboard />} />
-            <Route path="/professional" element={<ProfessionalDashboard />} />
             <Route path="/educator" element={<EducatorDashboard />} />
             <Route path="/assessment/new" element={<ChildSelection />} />
             <Route path="/assessment/new/type" element={<AssessmentSelection />} />
@@ -46,6 +50,14 @@ function App() {
             <Route path="/educator" element={<EducatorDashboard />} />
             <Route path="/observations/new" element={<NewObservation />} />
             <Route path="/student/:id" element={<StudentDetails />} />
+            <Route path="/assessment/:type" element={<AssessmentForm />} />
+            <Route path="/professional" element={<ProfessionalDashboard />} />
+            <Route path="/professional/assessment/:id/view" element={<ProfessionalAssessmentView />} />
+            <Route path="/professional/assessment/:id/reports/new" element={<AddProfessionalReport />} />
+            <Route path="/professional/assessment/:id/reports/:reportId/edit" element={<AddProfessionalReport />} />
+            <Route path="/professional/assessment/:id/reports/:reportId" element={<ViewProfessionalReport />} />
+            <Route path="/professional/assessment/:type/details" element={<ProfessionalAssessmentDetails />} />
+            <Route path="/professional/assessments" element={<ProfessionalAssessmentsPage />} />
           </Route>
         </Routes>
       </Router>

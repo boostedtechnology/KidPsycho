@@ -10,7 +10,7 @@ export function RoleSwitcher() {
 
   const getCurrentRole = () => {
     if (location.pathname === '/') return 'parent';
-    if (location.pathname === '/professional') return 'professional';
+    if (location.pathname === '/professional/dashboard') return 'professional';
     if (location.pathname === '/educator') return 'educator';
     return 'parent';
   };
@@ -33,7 +33,7 @@ export function RoleSwitcher() {
             )}
           </Button>
         </div>
-        
+
         <div className={`space-y-2 transition-all duration-200 ease-in-out ${
           isExpanded ? 'opacity-100 max-h-48' : 'opacity-0 max-h-0 overflow-hidden'
         }`}>
