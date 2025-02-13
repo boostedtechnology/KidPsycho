@@ -1,25 +1,26 @@
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { Route, BrowserRouter as Router, Routes } from 'react-router-dom';
-import { DashboardLayout } from './layouts/dashboard-layout';
-import { AssessmentDetails } from './pages/assessment-details';
-import { AssessmentForm } from './pages/assessment-form';
-import { AssessmentResults } from './pages/assessment-results';
-import { AssessmentSelection } from './pages/assessment-selection';
-import { ChildHistory } from './pages/child-history';
-import { ChildSelection } from './pages/child-selection';
-import { EducatorDashboard } from './pages/educator/educator-dashboard';
-import { NewObservation } from './pages/educator/observations/new';
-import { StudentDetails } from './pages/educator/student/[id]';
-import { FindSpecialists } from './pages/find-specialists';
-import { ParentDashboard } from './pages/parent-dashboard';
-import { PatientProfile } from './pages/patient-profile';
-import { ScheduleMeeting } from './pages/schedule-meeting';
+import { DashboardLayout } from './layouts/dashboard-layout.tsx';
+import { AssessmentDetails } from './pages/assessment-details.tsx';
+import { AssessmentForm } from './pages/assessment-form.tsx';
+import { AssessmentResults } from './pages/assessment-results.tsx';
+import { AssessmentSelection } from './pages/assessment-selection.tsx';
+import { ChildHistory } from './pages/child-history.tsx';
+import { ChildSelection } from './pages/child-selection.tsx';
+import { EducatorDashboard } from './pages/educator/educator-dashboard.tsx';
+import { NewObservation } from './pages/educator/observations/new.tsx';
+import { StudentDetails } from './pages/educator/student/[id].tsx';
+import { FindSpecialists } from './pages/find-specialists.tsx';
+import { ParentDashboard } from './pages/parent-dashboard.tsx';
+import { PatientProfile } from './pages/patient-profile.tsx';
+import { ScheduleMeeting } from './pages/schedule-meeting.tsx';
 import { ProfessionalAssessmentDetails } from '@/pages/professional/assessment-details.tsx';
 import { AddProfessionalReport } from '@/pages/professional/add-professional-report.tsx';
 import { ProfessionalAssessmentView } from '@/pages/professional/assessment-view.tsx';
 import { ViewProfessionalReport } from '@/pages/professional/view-professional-report.tsx';
 import { ProfessionalAssessmentsPage } from '@/pages/professional/assessments.tsx';
 import { ProfessionalDashboard } from '@/pages/professional/professional-dashboard.tsx';
+import { AIAdaptiveAssessment } from '@/pages/ai-adaptive-assessment.tsx';
 
 const queryClient = new QueryClient();
 
@@ -33,6 +34,7 @@ function App() {
             <Route path="/educator" element={<EducatorDashboard />} />
             <Route path="/assessment/new" element={<ChildSelection />} />
             <Route path="/assessment/new/type" element={<AssessmentSelection />} />
+            <Route path="/assessment/ai-adaptive" element={<AIAdaptiveAssessment />} />
             <Route path="/assessment/:type" element={<AssessmentForm />} />
             <Route path="/assessment/:type/results" element={<AssessmentResults />} />
             <Route path="/assessment/:type/details" element={<AssessmentDetails />} />

@@ -4,16 +4,41 @@ import {
   Activity, Calendar, FileText, TrendingUp, Users, MessageCircle, 
   HelpCircle, ChevronRight, Brain, Heart, PlusCircle, UserPlus, 
   Search, Bell, Book, Lightbulb, Video, GraduationCap,
-  HandHeart, UsersRound, Phone, Mail, ChevronLeft, ChevronDown
+  HandHeart, UsersRound, Phone, Mail, ChevronLeft, ChevronDown, X,
+  Puzzle, Sparkles, Leaf
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
-import { format, startOfMonth, endOfMonth, eachDayOfInterval, isSameMonth, isSameDay, addMonths, subMonths } from 'date-fns';
+import { format, eachDayOfInterval, startOfMonth, endOfMonth, subMonths, addMonths, isSameDay } from 'date-fns';
+import { useAppointmentStore } from '@/store/appointments';
 
 const mockProfile = {
   name: 'Marina George',
   email: 'marina.george@example.com',
   avatar: 'MG'
 };
+
+const allAppointments = [
+  {
+    id: 1,
+    date: '2024-02-20',
+    time: '10:00 AM',
+    type: 'Initial Consultation',
+    professional: {
+      name: 'Dr. Sarah Wilson',
+      specialty: 'Child Psychologist'
+    }
+  },
+  {
+    id: 2,
+    date: '2024-02-22',
+    time: '2:30 PM',
+    type: 'Follow-up Session',
+    professional: {
+      name: 'Dr. Michael Chen',
+      specialty: 'Development Specialist'
+    }
+  }
+];
 
 const mockChildren = [
   {
@@ -68,33 +93,69 @@ const mockChildren = [
 
 const resourceCategories = [
   {
-    title: 'Educational Resources',
-    icon: Book,
+    title: 'Growth & Development',
+    icon: Sparkles,
     items: [
-      { title: 'Learning Strategies', description: 'Effective techniques for different learning styles' },
-      { title: 'Development Milestones', description: 'Age-appropriate developmental guidelines' },
-      { title: 'Educational Activities', description: 'Engaging activities to support learning' },
-      { title: 'Academic Support', description: 'Resources for academic achievement' }
+      { 
+        title: 'Developmental Milestones',
+        description: 'Understanding your child\'s unique developmental journey'
+      },
+      { 
+        title: 'Social Skills Support',
+        description: 'Helping your child build meaningful relationships'
+      },
+      { 
+        title: 'Strength-Based Approach',
+        description: 'Focusing on and nurturing your child\'s talents'
+      },
+      { 
+        title: 'Future Planning',
+        description: 'Preparing for transitions and long-term success'
+      }
     ]
   },
   {
-    title: 'Parent Guides',
-    icon: Lightbulb,
+    title: 'Emotional Wellbeing',
+    icon: Heart,
     items: [
-      { title: 'Behavior Management', description: 'Strategies for positive behavior support' },
-      { title: 'Communication Tips', description: 'Effective parent-child communication' },
-      { title: 'Routine Building', description: 'Creating supportive daily routines' },
-      { title: 'Parenting Skills', description: 'Essential skills for effective parenting' }
+      { 
+        title: 'Understanding Your Child',
+        description: 'Insights into your child\'s emotional needs and triggers'
+      },
+      { 
+        title: 'Self-Care for Parents',
+        description: 'Taking care of yourself while caring for your child'
+      },
+      { 
+        title: 'Building Resilience',
+        description: 'Helping your child develop emotional strength'
+      },
+      { 
+        title: 'Family Harmony',
+        description: 'Maintaining balance and support within the family'
+      }
     ]
   },
   {
-    title: 'Video Resources',
-    icon: Video,
+    title: 'Personalized Support',
+    icon: Brain,
     items: [
-      { title: 'Expert Interviews', description: 'Insights from child development experts' },
-      { title: 'Parent Workshops', description: 'Recorded training sessions and workshops' },
-      { title: 'Success Stories', description: 'Real experiences from other parents' },
-      { title: 'Tutorial Series', description: 'Step-by-step guidance videos' }
+      { 
+        title: 'ADHD Strategies',
+        description: 'Tailored approaches for attention and focus challenges'
+      },
+      { 
+        title: 'Learning Adaptations',
+        description: 'Customized learning strategies based on assessments'
+      },
+      { 
+        title: 'Behavioral Support',
+        description: 'Personalized behavior management techniques'
+      },
+      { 
+        title: 'Progress Tracking',
+        description: 'Monitor and celebrate your child\'s achievements'
+      }
     ]
   }
 ];
@@ -144,22 +205,34 @@ const contactChannels = [
   }
 ];
 
-// Combine all appointments from all children for the calendar
-const allAppointments = mockChildren.flatMap(child => 
-  child.upcomingAppointments.map(apt => ({
-    ...apt,
-    childName: child.name
-  }))
-);
-
-function classNames(...classes: string[]) {
-  return classes.filter(Boolean).join(' ');
-}
-
 export function ParentDashboard() {
   const navigate = useNavigate();
   const [activeResourceCategory, setActiveResourceCategory] = useState(resourceCategories[0]);
   const [currentMonth, setCurrentMonth] = useState(new Date());
+  const [showCancelModal, setShowCancelModal] = useState(false);
+  const [showMeetingModal, setShowMeetingModal] = useState(false);
+  const [selectedMeeting, setSelectedMeeting] = useState<typeof appointments[0] | null>(null);
+  const [appointmentToCancel, setAppointmentToCancel] = useState<number | null>(null);
+  const appointments = useAppointmentStore((state) => state.getAppointments(1));
+  const { cancelAppointment } = useAppointmentStore();
+
+  const handleCancelClick = (appointmentId: number) => {
+    setAppointmentToCancel(appointmentId);
+    setShowCancelModal(true);
+  };
+
+  const handleConfirmCancel = () => {
+    if (appointmentToCancel) {
+      cancelAppointment(1, appointmentToCancel);
+      setShowCancelModal(false);
+      setAppointmentToCancel(null);
+    }
+  };
+
+  const handleJoinMeeting = (appointment: typeof appointments[0]) => {
+    setSelectedMeeting(appointment);
+    setShowMeetingModal(true);
+  };
 
   const days = eachDayOfInterval({
     start: startOfMonth(currentMonth),
@@ -177,6 +250,93 @@ export function ParentDashboard() {
 
   return (
     <div className="min-h-screen bg-gray-50">
+      {/* Cancel Appointment Modal */}
+      {showCancelModal && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+          <div className="bg-white rounded-lg p-6 max-w-md w-full mx-4 relative">
+            <button
+              onClick={() => setShowCancelModal(false)}
+              className="absolute top-4 right-4 text-gray-400 hover:text-gray-600"
+            >
+              <X className="h-5 w-5" />
+            </button>
+            
+            <div className="text-center mb-6">
+              <div className="mx-auto w-12 h-12 bg-red-50 rounded-full flex items-center justify-center mb-4">
+                <Calendar className="h-6 w-6 text-red-600" />
+              </div>
+              <h3 className="text-xl font-semibold text-gray-900 mb-2">
+                Cancel Appointment
+              </h3>
+              <p className="text-gray-600">
+                Are you sure you want to cancel this appointment? This action cannot be undone.
+              </p>
+            </div>
+
+            <div className="flex space-x-4">
+              <Button
+                variant="outline"
+                className="flex-1"
+                onClick={() => setShowCancelModal(false)}
+              >
+                Keep Appointment
+              </Button>
+              <Button
+                className="flex-1 bg-red-600 text-white hover:bg-red-700"
+                onClick={handleConfirmCancel}
+              >
+                Cancel Appointment
+              </Button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Meeting Room Modal */}
+      {showMeetingModal && selectedMeeting && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+          <div className="bg-white rounded-lg w-full max-w-2xl mx-4">
+            <div className="border-b p-6">
+              <div className="flex justify-between items-center">
+                <h2 className="text-xl font-semibold text-gray-900">
+                  {selectedMeeting.professional.name}'s Personal Meeting Room
+                </h2>
+                <button
+                  onClick={() => setShowMeetingModal(false)}
+                  className="text-gray-400 hover:text-gray-600"
+                >
+                  <X className="h-5 w-5" />
+                </button>
+              </div>
+            </div>
+
+            <div className="p-6 text-center space-y-6">
+              <p className="text-lg text-gray-600">
+                We've let the host know you're here
+              </p>
+              <a
+                href="#"
+                className="text-blue-600 hover:text-blue-700 hover:underline"
+              >
+                Test Speaker and Mic
+              </a>
+              <div>
+                <Button
+                  size="lg"
+                  className="bg-blue-600 text-white hover:bg-blue-700 px-8"
+                  onClick={() => {
+                    setShowMeetingModal(false);
+                    // Here you would typically initiate the video call
+                  }}
+                >
+                  Join Meeting
+                </Button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+
       {/* Hero Section */}
       <div className="bg-gradient-to-r from-blue-600 to-blue-800 text-white">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -227,7 +387,7 @@ export function ParentDashboard() {
               <img 
                 src="https://images.unsplash.com/photo-1516627145497-ae6968895b74?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1740&q=80"
                 alt="Parent and child"
-                className="rounded-lg shadow-xl"
+                className="rounded-lg shadow-xl w-[500px] h-[300px] object-cover"
               />
             </div>
           </div>
@@ -236,123 +396,138 @@ export function ParentDashboard() {
 
       <main className="max-w-7xl mx-auto px-4 py-8 sm:px-6 lg:px-8">
         {/* Children Management */}
-        <section className="mb-12">
-          <div className="flex justify-between items-center mb-6">
-            <h2 className="text-2xl font-bold text-gray-900">Your Children</h2>
-            <Button
-              onClick={() => navigate('/add-child')}
-              className="flex items-center"
+        <div className="flex justify-between items-center mb-6">
+          <h2 className="text-2xl font-bold text-gray-900">Your Children</h2>
+          <Button
+            onClick={() => navigate('/add-child')}
+            className="flex items-center"
+          >
+            <UserPlus className="h-5 w-5 mr-2" />
+            Add Child
+          </Button>
+        </div>
+
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-12">
+          {mockChildren.map((child) => (
+            <div
+              key={child.id}
+              className="p-6 rounded-lg border-2 border-gray-200 bg-white hover:border-blue-300 transition-all"
             >
-              <UserPlus className="h-5 w-5 mr-2" />
-              Add Child
-            </Button>
-          </div>
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {mockChildren.map((child) => (
-              <div
-                key={child.id}
-                className="p-6 rounded-lg border-2 border-gray-200 bg-white hover:border-blue-300 transition-all"
+              <div className="flex items-center justify-between mb-4">
+                <div>
+                  <h3 className="text-lg font-medium text-gray-900">{child.name}</h3>
+                  <p className="text-sm text-gray-500">{child.age} years old</p>
+                </div>
+                <div className="h-10 w-10 rounded-full bg-blue-100 flex items-center justify-center">
+                  <span className="text-blue-600 font-semibold">
+                    {child.name.split(' ').map(n => n[0]).join('')}
+                  </span>
+                </div>
+              </div>
+              <div className="space-y-2 mb-4">
+                <p className="text-sm text-gray-600">
+                  Latest Assessment: {child.recentAssessments[0]?.type || 'None'}
+                </p>
+                <p className="text-sm text-gray-600">
+                  Next Appointment: {child.upcomingAppointments[0]?.date || 'None scheduled'}
+                </p>
+              </div>
+              <Button
+                variant="outline"
+                className="w-full"
+                onClick={() => navigate(`/child/${child.name.toLowerCase().replace(' ', '-')}`)}
               >
-                <div className="flex items-center justify-between mb-4">
-                  <div>
-                    <h3 className="text-lg font-medium text-gray-900">{child.name}</h3>
-                    <p className="text-sm text-gray-500">{child.age} years old</p>
-                  </div>
-                  <div className="h-10 w-10 rounded-full bg-blue-100 flex items-center justify-center">
-                    <span className="text-blue-600 font-semibold">
-                      {child.name.split(' ').map(n => n[0]).join('')}
-                    </span>
-                  </div>
-                </div>
-                <div className="space-y-2 mb-4">
-                  <p className="text-sm text-gray-600">
-                    Latest Assessment: {child.recentAssessments[0]?.type || 'None'}
-                  </p>
-                  <p className="text-sm text-gray-600">
-                    Next Appointment: {child.upcomingAppointments[0]?.date || 'None scheduled'}
-                  </p>
-                </div>
+                View Details
+              </Button>
+            </div>
+          ))}
+        </div>
+
+        {/* Upcoming Appointments */}
+        <section className="mb-12">
+          <div className="bg-white rounded-lg shadow-sm">
+            <div className="px-6 py-4 border-b border-gray-200">
+              <div className="flex justify-between items-center">
+                <h2 className="text-xl font-bold text-gray-900">Upcoming Appointments</h2>
                 <Button
-                  variant="outline"
-                  className="w-full"
-                  onClick={() => navigate(`/child/${child.name.toLowerCase().replace(' ', '-')}`)}
+                  onClick={() => navigate('/schedule')}
+                  className="bg-white text-gray-900 hover:bg-gray-50 border shadow-sm"
                 >
-                  View Details
+                  Schedule New
                 </Button>
               </div>
-            ))}
-          </div>
-        </section>
-
-        {/* Calendar and Upcoming Appointments */}
-        <section className="mb-12">
-          <div className="bg-white shadow rounded-lg">
-            <div className="px-6 py-4 border-b border-gray-200">
-              <h2 className="text-xl font-bold text-gray-900">Calendar & Appointments</h2>
             </div>
-            <div className="p-6">
-              <div className="flex items-center justify-between mb-4">
-                <h2 className="text-lg font-semibold text-gray-900">
-                  {format(currentMonth, 'MMMM yyyy')}
-                </h2>
-                <div className="flex space-x-2">
-                  <Button
-                    variant="outline"
-                    size="sm"
-                    onClick={previousMonth}
-                  >
-                    <ChevronLeft className="h-5 w-5" />
-                  </Button>
-                  <Button
-                    variant="outline"
-                    size="sm"
-                    onClick={nextMonth}
-                  >
-                    <ChevronRight className="h-5 w-5" />
-                  </Button>
-                </div>
+            {appointments.length === 0 ? (
+              <div className="p-12 text-center">
+                <Calendar className="h-12 w-12 text-gray-400 mx-auto mb-4" />
+                <h3 className="text-lg font-medium text-gray-900 mb-2">No Upcoming Appointments</h3>
+                <p className="text-gray-500 mb-6">
+                  Schedule a consultation with one of our professionals.
+                </p>
+                <Button
+                  onClick={() => navigate('/schedule')}
+                  className="flex items-center mx-auto"
+                >
+                  <Calendar className="h-5 w-5 mr-2" />
+                  Schedule Appointment
+                </Button>
               </div>
-              <div className="grid grid-cols-7 gap-px bg-gray-200 rounded-lg overflow-hidden">
-                {['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'].map((day) => (
+            ) : (
+              <div className="p-6 space-y-4">
+                {appointments.map((appointment) => (
                   <div
-                    key={day}
-                    className="bg-gray-50 py-2 text-center text-sm font-medium text-gray-500"
+                    key={appointment.id}
+                    className="border rounded-lg p-6 hover:bg-gray-50 transition-colors"
                   >
-                    {day}
+                    <div className="flex items-center justify-between">
+                      <div className="flex items-center space-x-4">
+                        <img
+                          src={appointment.professional.image}
+                          alt={appointment.professional.name}
+                          className="h-12 w-12 rounded-full object-cover"
+                        />
+                        <div>
+                          <div className="flex items-center space-x-2">
+                            <span className="text-xl font-semibold text-gray-900">
+                              {appointment.time}
+                            </span>
+                            <span className="text-gray-500">(EST)</span>
+                          </div>
+                          <h3 className="text-lg text-gray-900">
+                            {appointment.type} with {appointment.professional.name}
+                          </h3>
+                          <p className="text-gray-500">
+                            {format(new Date(appointment.date), 'yyyy-MM-dd')} • {appointment.duration}
+                          </p>
+                        </div>
+                      </div>
+                      <div className="flex items-center space-x-3">
+                        <Button
+                          variant="outline"
+                          className="text-red-600 hover:text-red-700 hover:bg-red-50"
+                          onClick={() => handleCancelClick(appointment.id)}
+                        >
+                          Cancel
+                        </Button>
+                        <Button
+                          variant="outline"
+                          onClick={() => navigate(`/appointments/reschedule/${appointment.id}`)}
+                        >
+                          Reschedule
+                        </Button>
+                        <Button
+                          onClick={() => handleJoinMeeting(appointment)}
+                          className="bg-blue-600 text-white hover:bg-blue-700"
+                        >
+                          <Video className="h-4 w-4 mr-2" />
+                          Join
+                        </Button>
+                      </div>
+                    </div>
                   </div>
                 ))}
-                {days.map((day, dayIdx) => {
-                  const appointments = getAppointmentsForDay(day);
-                  return (
-                    <div
-                      key={day.toString()}
-                      className={classNames(
-                        'bg-white min-h-[100px] p-2',
-                        !isSameMonth(day, currentMonth) && 'bg-gray-50 text-gray-400'
-                      )}
-                    >
-                      <time
-                        dateTime={format(day, 'yyyy-MM-dd')}
-                        className={classNames(
-                          'text-sm font-medium',
-                          isSameMonth(day, currentMonth) ? 'text-gray-900' : 'text-gray-400'
-                        )}
-                      >
-                        {format(day, 'd')}
-                      </time>
-                      {appointments.map((apt, idx) => (
-                        <div
-                          key={apt.id}
-                          className="mt-1 text-xs bg-blue-50 text-blue-700 p-1 rounded truncate"
-                        >
-                          {apt.time} - {apt.type}
-                        </div>
-                      ))}
-                    </div>
-                  );
-                })}
               </div>
-            </div>
+            )}
           </div>
         </section>
 

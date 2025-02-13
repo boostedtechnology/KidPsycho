@@ -1,8 +1,21 @@
 import { useNavigate, useLocation } from 'react-router-dom';
-import { Activity, Brain, HeartPulse, BookOpen, Sparkles, Stethoscope, ArrowLeft } from 'lucide-react';
+import { Activity, Brain, HeartPulse, BookOpen, Sparkles, Stethoscope, ArrowLeft, Notebook as Robot, Gamepad } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 
 const assessments = [
+  {
+    id: 'ai-adaptive',
+    title: 'AI-Powered Interactive Assessment',
+    description: 'Engaging, child-friendly assessment that adapts in real-time using advanced AI technology',
+    icon: Robot,
+    color: 'indigo',
+    features: [
+      'Interactive games and activities',
+      'Real-time difficulty adjustment',
+      'Visual and audio guidance',
+      'Child-friendly interface'
+    ]
+  },
   {
     id: 'adhd',
     title: 'ADHD Assessment',
@@ -48,6 +61,7 @@ const assessments = [
 ];
 
 const colorClasses = {
+  indigo: 'bg-indigo-50 border-indigo-200 text-indigo-600 hover:bg-indigo-100',
   blue: 'bg-blue-50 border-blue-200 text-blue-600 hover:bg-blue-100',
   purple: 'bg-purple-50 border-purple-200 text-purple-600 hover:bg-purple-100',
   pink: 'bg-pink-50 border-pink-200 text-pink-600 hover:bg-pink-100',
@@ -86,8 +100,58 @@ export function AssessmentSelection() {
           </div>
         </div>
 
+        {/* Featured AI Assessment */}
+        <div className="mb-8">
+          <div className="p-6 rounded-xl border-2 border-indigo-200 bg-gradient-to-r from-indigo-50 to-purple-50">
+            <div className="flex items-start space-x-6">
+              <div className="flex-shrink-0">
+                <div className="p-3 bg-white rounded-lg shadow-sm">
+                  <Robot className="h-8 w-8 text-indigo-600" />
+                </div>
+              </div>
+              <div className="flex-1">
+                <div className="flex items-center space-x-3">
+                  <h3 className="text-xl font-bold text-gray-900">AI-Powered Interactive Assessment</h3>
+                  <span className="px-3 py-1 text-xs font-medium bg-indigo-100 text-indigo-600 rounded-full">New</span>
+                </div>
+                <p className="mt-2 text-gray-600">
+                  An engaging, child-friendly assessment that adapts in real-time using advanced AI technology. 
+                  Your child interacts directly with fun activities while our AI personalizes the experience.
+                </p>
+                <div className="mt-4 grid grid-cols-2 gap-4">
+                  <div className="flex items-center space-x-2">
+                    <Gamepad className="h-5 w-5 text-indigo-500" />
+                    <span className="text-sm text-gray-600">Interactive games and activities</span>
+                  </div>
+                  <div className="flex items-center space-x-2">
+                    <Brain className="h-5 w-5 text-indigo-500" />
+                    <span className="text-sm text-gray-600">Adaptive difficulty levels</span>
+                  </div>
+                  <div className="flex items-center space-x-2">
+                    <HeartPulse className="h-5 w-5 text-indigo-500" />
+                    <span className="text-sm text-gray-600">Child-friendly interface</span>
+                  </div>
+                  <div className="flex items-center space-x-2">
+                    <Sparkles className="h-5 w-5 text-indigo-500" />
+                    <span className="text-sm text-gray-600">Real-time personalization</span>
+                  </div>
+                </div>
+                <div className="mt-6">
+                  <Button
+                    onClick={() => navigate(`/assessment/ai-adaptive?childId=${childId}`)}
+                    className="bg-indigo-600 text-white hover:bg-indigo-700"
+                  >
+                    Start Interactive Assessment
+                  </Button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        {/* Other Assessments Grid */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {assessments.map((assessment) => {
+          {assessments.slice(1).map((assessment) => {
             const Icon = assessment.icon;
             return (
               <button
@@ -107,7 +171,7 @@ export function AssessmentSelection() {
                   </div>
                 </div>
               </button>
-            )
+            );
           })}
         </div>
       </div>
